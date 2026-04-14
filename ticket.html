@@ -3,20 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dark Mart | Secure Support System</title>
+    <title>Dark Mart | Secure Database Terminal</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Unbounded:wght@700;900&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        :root {
-            --primary: #ffffff; 
-            --dark-bg: #0a0a0a;
-            --card-bg: rgba(20, 20, 20, 0.8);
-            --glass-border: rgba(255, 255, 255, 0.05);
-        }
-
+        :root { --dark-bg: #0a0a0a; --glass-border: rgba(255, 255, 255, 0.05); }
         body {
             background-color: var(--dark-bg);
             color: #ffffff;
@@ -25,270 +19,272 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
-
-        .glass {
-            background: var(--card-bg);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-        }
-
-        .dark-grid {
-            background-size: 30px 30px;
-            background-image: linear-gradient(to right, rgba(255,255,255,0.01) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(255,255,255,0.01) 1px, transparent 1px);
-        }
-
+        .glass { background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); }
         .hidden { display: none !important; }
-        
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-
         input, textarea {
             background: rgba(255,255,255,0.03) !important;
             border: 1px solid rgba(255,255,255,0.1) !important;
             color: white !important;
-        }
-
-        input:focus, textarea:focus {
-            border-color: white !important;
             outline: none;
+            transition: all 0.3s ease;
         }
+        input:focus, textarea:focus { border-color: white !important; background: rgba(255,255,255,0.06) !important; }
+        
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
     </style>
 </head>
-<body class="dark-grid">
+<body>
 
     <nav class="fixed top-0 w-full z-50 bg-black/60 backdrop-blur-xl border-b border-white/5">
         <div class="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
-            <a href="index.html" class="flex items-center space-x-3">
-                <img src="dark.png" alt="Dark Mart" class="w-8 h-8 grayscale brightness-200">
-                <span class="text-sm font-[Unbounded] font-black tracking-tighter uppercase">DARK MART / SUPPORT</span>
-            </a>
-            <button onclick="showAdminLogin()" class="text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all">Admin Panel</button>
+            <div class="flex items-center space-x-3">
+                <img src="dark.png" alt="DM" class="w-8 h-8 grayscale brightness-200">
+                <span class="text-xs font-[Unbounded] font-black tracking-tighter uppercase">DARK MART / DATABASE</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span id="userBadge" class="text-[9px] font-black text-gray-500 uppercase hidden"></span>
+                <button onclick="showAdminPrompt()" class="text-[10px] font-black uppercase text-gray-500 hover:text-white transition-all">Admin</button>
+            </div>
         </div>
     </nav>
 
     <div class="pt-32 pb-20 px-6 max-w-4xl mx-auto">
         
-        <div id="referralView" class="text-center" data-aos="fade-up">
-            <h1 class="text-4xl font-[Unbounded] font-black mb-4 uppercase">Verification</h1>
-            <p class="text-gray-500 mb-8">Please tell us who referred you to our services.</p>
-            <div class="max-w-sm mx-auto">
-                <input type="text" id="referrerName" placeholder="Referrer Name / Discord ID" class="w-full p-4 rounded-xl mb-4 transition-all">
-                <button onclick="submitReferral()" class="w-full bg-white text-black font-black py-4 rounded-xl uppercase text-sm hover:scale-105 transition-all">Open Ticket System</button>
+        <div id="authView" class="text-center" data-aos="fade-up">
+            <h1 class="text-4xl font-[Unbounded] font-black mb-4 uppercase">Identity Terminal</h1>
+            <p class="text-gray-500 mb-8">Login or Register to access your secure tickets.</p>
+            <div class="max-w-sm mx-auto glass p-8 rounded-3xl space-y-4">
+                <input type="text" id="authUser" placeholder="Username" class="w-full p-4 rounded-xl text-sm">
+                <input type="password" id="authPass" placeholder="Password" class="w-full p-4 rounded-xl text-sm">
+                <div class="flex gap-2">
+                    <button onclick="handleAuth('login')" class="flex-1 bg-white/10 text-white font-black py-4 rounded-xl uppercase text-[10px]">Sign In</button>
+                    <button onclick="handleAuth('signup')" class="flex-1 bg-white text-black font-black py-4 rounded-xl uppercase text-[10px]">Register</button>
+                </div>
             </div>
         </div>
 
-        <div id="createTicketView" class="hidden text-center" data-aos="fade-up">
-            <h1 class="text-4xl font-[Unbounded] font-black mb-4 uppercase">New Request</h1>
-            <p class="text-gray-500 mb-8">Describe the product or service you want to buy.</p>
+        <div id="rufferView" class="hidden text-center" data-aos="fade-up">
+            <h1 class="text-3xl font-[Unbounded] font-black mb-4 uppercase">Verification</h1>
+            <p class="text-gray-500 mb-8">Who is your Ruffer?</p>
+            <div class="max-w-sm mx-auto">
+                <input type="text" id="rufferName" placeholder="Ruffer Name" class="w-full p-4 rounded-xl mb-4 text-sm">
+                <button onclick="submitRuffer()" class="w-full bg-white text-black font-black py-4 rounded-xl uppercase text-[10px]">Confirm</button>
+            </div>
+        </div>
+
+        <div id="ticketView" class="hidden text-center" data-aos="fade-up">
+            <h1 class="text-3xl font-[Unbounded] font-black mb-4 uppercase">New Ticket</h1>
             <div class="max-w-md mx-auto">
-                <textarea id="ticketSubject" placeholder="Ex: I want to buy 10k Robux and a VPS..." class="w-full h-32 p-4 rounded-xl mb-4 transition-all resize-none"></textarea>
-                <button onclick="createTicket()" class="w-full bg-white text-black font-black py-4 rounded-xl uppercase text-sm">Create Ticket</button>
+                <textarea id="ticketBody" placeholder="Describe your request..." class="w-full h-32 p-4 rounded-xl mb-4 resize-none text-sm"></textarea>
+                <button onclick="createTicket()" class="w-full bg-white text-black font-black py-4 rounded-xl uppercase text-[10px]">Initialize Ticket</button>
             </div>
         </div>
 
         <div id="chatView" class="hidden" data-aos="fade-up">
             <div class="glass rounded-3xl overflow-hidden flex flex-col h-[600px]">
                 <div class="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
-                    <div class="flex flex-col">
-                        <span id="chatTitle" class="font-black uppercase text-xs tracking-widest">Ticket #DM-0000</span>
-                        <span id="chatReferrer" class="text-[9px] text-gray-500 uppercase font-bold">Ref: None</span>
+                    <div class="text-left">
+                        <span id="chatIdDisplay" class="font-black text-xs block uppercase">Ticket: ---</span>
+                        <span id="rufferDisplay" class="text-[9px] text-gray-500 font-bold uppercase">Ruffer: ---</span>
                     </div>
-                    <button onclick="goBack()" id="backBtn" class="text-[10px] font-black text-gray-400 hover:text-white uppercase">Close Chat</button>
+                    <button onclick="location.reload()" class="text-[10px] font-black text-gray-500 hover:text-white uppercase transition-all">Logout</button>
                 </div>
-                
-                <div id="messageBox" class="flex-1 p-6 overflow-y-auto space-y-4 text-sm">
-                    </div>
-
-                <div class="p-4 border-t border-white/5 bg-white/[0.02] flex gap-2">
-                    <input type="text" id="messageInput" placeholder="Type your message..." class="flex-1 p-3 rounded-xl outline-none">
-                    <button id="sendBtn" class="bg-white text-black px-6 rounded-xl font-black text-xs uppercase">Send</button>
+                <div id="msgBox" class="flex-1 p-6 overflow-y-auto space-y-4 text-sm"></div>
+                <div class="p-4 bg-white/[0.02] border-t border-white/5 flex gap-2">
+                    <input type="text" id="chatInput" placeholder="Message..." class="flex-1 p-3 rounded-xl text-xs">
+                    <button onclick="sendMsg()" class="bg-white text-black px-6 rounded-xl font-black text-[10px] uppercase">Send</button>
                 </div>
             </div>
         </div>
 
-        <div id="adminDashboard" class="hidden" data-aos="fade-in">
-            <div class="flex justify-between items-end mb-10">
-                <div>
-                    <span class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Control Center</span>
-                    <h1 class="text-3xl font-[Unbounded] font-black uppercase">Admin Panel</h1>
-                </div>
-                <button onclick="logoutAdmin()" class="text-xs font-bold text-red-500 uppercase tracking-tighter">Secure Logout</button>
+        <div id="adminView" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-[Unbounded] font-black uppercase">Admin Terminal</h1>
+                <button onclick="location.reload()" class="text-red-500 font-black text-[10px] uppercase border border-red-500/20 px-4 py-2 rounded-lg">Logout</button>
             </div>
-            
-            <div id="ticketList" class="space-y-4">
-                </div>
+            <div id="adminList" class="space-y-4"></div>
         </div>
-
     </div>
 
-    <div id="adminLoginView" class="hidden fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-6 backdrop-blur-sm">
-        <div class="max-w-sm w-full text-center glass p-8 rounded-3xl">
-            <h2 class="text-xl font-[Unbounded] font-black mb-6 uppercase">Restricted Access</h2>
-            <input type="password" id="adminPass" placeholder="Enter Admin Password" class="w-full p-4 rounded-xl mb-4 outline-none text-center">
-            <div class="flex gap-2">
-                <button onclick="hideAdminLogin()" class="flex-1 border border-white/10 py-3 rounded-xl text-[10px] font-bold uppercase">Cancel</button>
-                <button onclick="verifyAdmin()" class="flex-1 bg-white text-black py-3 rounded-xl text-[10px] font-black uppercase">Verify</button>
-            </div>
+    <div id="adminAuthOverlay" class="hidden fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-6">
+        <div class="max-w-sm w-full glass p-8 rounded-3xl text-center">
+            <h2 class="text-xl font-[Unbounded] font-black mb-6 uppercase">Admin Access</h2>
+            <input type="password" id="adminPassInput" placeholder="Password" class="w-full p-4 rounded-xl mb-4 text-center">
+            <button onclick="verifyAdmin()" class="w-full bg-white text-black py-3 rounded-xl font-black uppercase text-xs">Verify</button>
+            <button onclick="hideAdminPrompt()" class="mt-4 text-[10px] text-gray-600 font-bold uppercase cursor-pointer">Close</button>
         </div>
     </div>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init();
-        
-        const ADMIN_PASS = "DarkMart@638484";
-        let activeTicketId = null;
-        let isAdminMode = false;
+        const ADMIN_SECRET = "DarkMart@638484";
+        let db;
+        let currentUser = null;
+        let activeId = null;
+        let isAdmin = false;
 
-        // View Controller
-        function showView(viewId) {
-            const views = ['referralView', 'createTicketView', 'chatView', 'adminDashboard'];
-            views.forEach(v => document.getElementById(v).classList.add('hidden'));
-            document.getElementById(viewId).classList.remove('hidden');
+        // --- DATABASE INITIALIZATION ---
+        const request = indexedDB.open("DarkMartFinalDB", 1);
+        request.onupgradeneeded = (e) => {
+            let d = e.target.result;
+            if (!d.objectStoreNames.contains("users")) d.createObjectStore("users", { keyPath: "username" });
+            if (!d.objectStoreNames.contains("tickets")) d.createObjectStore("tickets", { keyPath: "id" });
+        };
+        request.onsuccess = (e) => { db = e.target.result; };
+
+        // --- NAVIGATION ---
+        function show(id) {
+            ['authView', 'rufferView', 'ticketView', 'chatView', 'adminView'].forEach(v => 
+                document.getElementById(v).classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
         }
 
-        function goBack() {
-            if (isAdminMode) {
-                showView('adminDashboard');
-                renderAdminList();
+        // --- AUTHENTICATION ---
+        function handleAuth(type) {
+            const u = document.getElementById('authUser').value.trim();
+            const p = document.getElementById('authPass').value.trim();
+            if(!u || !p) return alert("Fill all fields");
+
+            const tx = db.transaction("users", "readwrite");
+            const store = tx.objectStore("users");
+
+            if(type === 'signup') {
+                store.add({username: u, password: p}).onsuccess = () => { 
+                    currentUser = u; 
+                    loginSuccess(u);
+                };
+                tx.onerror = () => alert("Username already taken.");
             } else {
-                location.reload();
+                store.get(u).onsuccess = (e) => {
+                    const res = e.target.result;
+                    if(res && res.password === p) loginSuccess(u);
+                    else alert("Wrong credentials");
+                };
             }
         }
 
-        // Referral Logic
-        function submitReferral() {
-            const val = document.getElementById('referrerName').value.trim();
-            if(!val) return alert("Referrer name is required.");
-            localStorage.setItem('tempReferrer', val);
-            showView('createTicketView');
+        function loginSuccess(u) {
+            currentUser = u;
+            document.getElementById('userBadge').innerText = "USER: " + u;
+            document.getElementById('userBadge').classList.remove('hidden');
+            
+            // Check for existing tickets
+            const tx = db.transaction("tickets", "readonly");
+            const request = tx.objectStore("tickets").getAll();
+            request.onsuccess = (e) => {
+                const tickets = e.target.result;
+                const existing = tickets.find(t => t.owner === u);
+                if(existing) openChat(existing.id);
+                else show('rufferView');
+            };
         }
 
-        // Ticket Management
+        // --- TICKET & CHAT ---
+        function submitRuffer() {
+            const r = document.getElementById('rufferName').value.trim();
+            if(!r) return alert("Ruffer name is required.");
+            localStorage.setItem('temp_ruffer', r);
+            show('ticketView');
+        }
+
         function createTicket() {
-            const subject = document.getElementById('ticketSubject').value.trim();
-            if(!subject) return alert("Please describe your request.");
+            const sub = document.getElementById('ticketBody').value.trim();
+            if(!sub) return alert("Please describe your request.");
             
-            const id = "DM-" + Math.floor(1000 + Math.random() * 9000);
-            const newTicket = {
-                id: id,
-                subject: subject,
-                referrer: localStorage.getItem('tempReferrer'),
-                status: 'Open',
-                messages: [{sender: 'System', text: "Welcome to Dark Mart Support. An admin will be with you shortly."}]
+            const id = "DM-" + Math.floor(Math.random()*90000);
+            const ticket = {
+                id, sub, owner: currentUser,
+                ruffer: localStorage.getItem('temp_ruffer'),
+                msgs: [{role: 'System', text: `Session started for ${currentUser}. Support will be with you shortly.`}]
             };
 
-            const tickets = JSON.parse(localStorage.getItem('dm_tickets') || "[]");
-            tickets.push(newTicket);
-            localStorage.setItem('dm_tickets', JSON.stringify(tickets));
-            
-            activeTicketId = id;
-            isAdminMode = false;
-            openChat(id);
+            const tx = db.transaction("tickets", "readwrite");
+            tx.objectStore("tickets").add(ticket).onsuccess = () => openChat(id);
         }
 
-        // Chat Logic
         function openChat(id) {
-            activeTicketId = id;
-            showView('chatView');
-            renderMessages();
-            
-            document.getElementById('sendBtn').onclick = () => sendMessage(isAdminMode ? 'Admin' : 'Customer');
+            activeId = id;
+            show('chatView');
+            const tx = db.transaction("tickets", "readonly");
+            tx.objectStore("tickets").get(id).onsuccess = (e) => {
+                const t = e.target.result;
+                if(!t) { show('rufferView'); return; }
+                document.getElementById('chatIdDisplay').innerText = "Ticket: " + t.id;
+                document.getElementById('rufferDisplay').innerText = "Ruffer: " + t.ruffer;
+                renderMsgs(t.msgs);
+            };
         }
 
-        function renderMessages() {
-            const tickets = JSON.parse(localStorage.getItem('dm_tickets') || "[]");
-            const ticket = tickets.find(t => t.id === activeTicketId);
-            if(!ticket) return;
-
-            document.getElementById('chatTitle').innerText = `Ticket #${ticket.id}`;
-            document.getElementById('chatReferrer').innerText = `Referrer: ${ticket.referrer}`;
-
-            const box = document.getElementById('messageBox');
-            box.innerHTML = ticket.messages.map(m => `
-                <div class="flex ${m.sender === 'Customer' ? 'justify-end' : 'justify-start'}">
-                    <div class="${m.sender === 'Customer' ? 'bg-white text-black' : 'bg-white/5 border border-white/10'} p-4 rounded-2xl max-w-[85%]">
-                        <span class="text-[8px] font-black uppercase opacity-50 block mb-1">${m.sender}</span>
-                        <p class="font-medium leading-relaxed">${m.text}</p>
+        function renderMsgs(msgs) {
+            const box = document.getElementById('msgBox');
+            box.innerHTML = msgs.map(m => `
+                <div class="flex ${m.role === 'User' ? 'justify-end' : 'justify-start'}">
+                    <div class="${m.role === 'User' ? 'bg-white text-black' : 'bg-white/5 border border-white/10'} p-3 rounded-xl max-w-[80%]">
+                        <span class="text-[7px] font-black uppercase opacity-40 block mb-1">${m.role}</span>
+                        <p class="text-xs font-medium">${m.text}</p>
                     </div>
                 </div>
             `).join('');
             box.scrollTop = box.scrollHeight;
         }
 
-        function sendMessage(role) {
-            const input = document.getElementById('messageInput');
-            const text = input.value.trim();
-            if(!text) return;
-
-            const tickets = JSON.parse(localStorage.getItem('dm_tickets') || "[]");
-            const index = tickets.findIndex(t => t.id === activeTicketId);
-            
-            tickets[index].messages.push({sender: role, text: text});
-            localStorage.setItem('dm_tickets', JSON.stringify(tickets));
-            
-            input.value = "";
-            renderMessages();
+        function sendMsg() {
+            const input = document.getElementById('chatInput');
+            if(!input.value.trim()) return;
+            const tx = db.transaction("tickets", "readwrite");
+            const store = tx.objectStore("tickets");
+            store.get(activeId).onsuccess = (e) => {
+                const t = e.target.result;
+                t.msgs.push({role: isAdmin ? "Admin" : "User", text: input.value});
+                store.put(t);
+                renderMsgs(t.msgs);
+                input.value = "";
+            };
         }
 
-        // Admin Features
-        function showAdminLogin() { document.getElementById('adminLoginView').classList.remove('hidden'); }
-        function hideAdminLogin() { document.getElementById('adminLoginView').classList.add('hidden'); }
-
+        // --- ADMIN CONTROLS ---
+        function showAdminPrompt() { document.getElementById('adminAuthOverlay').classList.remove('hidden'); }
+        function hideAdminPrompt() { document.getElementById('adminAuthOverlay').classList.add('hidden'); }
+        
         function verifyAdmin() {
-            if(document.getElementById('adminPass').value === ADMIN_PASS) {
-                isAdminMode = true;
-                hideAdminLogin();
-                showView('adminDashboard');
-                renderAdminList();
-            } else {
-                alert("Access Denied: Invalid Credentials");
-            }
+            if(document.getElementById('adminPassInput').value === ADMIN_SECRET) {
+                isAdmin = true;
+                hideAdminPrompt();
+                show('adminView');
+                loadAdminTickets();
+            } else alert("Invalid Password");
         }
 
-        function renderAdminList() {
-            const tickets = JSON.parse(localStorage.getItem('dm_tickets') || "[]");
-            const list = document.getElementById('ticketList');
-            
-            if(tickets.length === 0) {
-                list.innerHTML = `<div class="text-center py-20 text-gray-600 font-bold uppercase tracking-widest">No Active Tickets</div>`;
-                return;
-            }
-
-            list.innerHTML = tickets.map(t => `
-                <div class="glass p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-3 mb-1">
-                            <span class="text-xs font-black text-white">${t.id}</span>
-                            <span class="text-[9px] bg-white/10 px-2 py-0.5 rounded text-gray-400 uppercase font-bold">Ref: ${t.referrer}</span>
+        function loadAdminTickets() {
+            const list = document.getElementById('adminList');
+            const tx = db.transaction("tickets", "readonly");
+            tx.objectStore("tickets").getAll().onsuccess = (e) => {
+                const tickets = e.target.result;
+                if(tickets.length === 0) {
+                    list.innerHTML = "<p class='text-gray-600 text-[10px] uppercase font-black text-center py-10'>No tickets found</p>";
+                    return;
+                }
+                list.innerHTML = tickets.map(t => `
+                    <div class="glass p-5 rounded-2xl flex justify-between items-center text-left">
+                        <div>
+                            <p class="text-[9px] font-black text-gray-500 uppercase">${t.id} | User: ${t.owner}</p>
+                            <h3 class="font-bold text-sm">${t.sub}</h3>
                         </div>
-                        <p class="text-sm text-gray-400 font-medium">${t.subject}</p>
+                        <div class="flex gap-2">
+                            <button onclick="openChat('${t.id}')" class="bg-white text-black px-4 py-2 rounded-lg text-[9px] font-black uppercase">Open</button>
+                            <button onclick="deleteTicket('${t.id}')" class="text-red-500 text-[9px] font-black uppercase">Delete</button>
+                        </div>
                     </div>
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <button onclick="adminManage('${t.id}')" class="flex-1 md:flex-none bg-white text-black px-6 py-2 rounded-lg text-[10px] font-black uppercase">Open</button>
-                        <button onclick="deleteTicket('${t.id}')" class="flex-1 md:flex-none border border-red-500/30 text-red-500 px-6 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-red-500 hover:text-white transition-all">Delete</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function adminManage(id) {
-            isAdminMode = true;
-            openChat(id);
+                `).join('');
+            };
         }
 
         function deleteTicket(id) {
-            if(!confirm("Are you sure you want to permanently delete this ticket?")) return;
-            let tickets = JSON.parse(localStorage.getItem('dm_tickets') || "[]");
-            tickets = tickets.filter(t => t.id !== id);
-            localStorage.setItem('dm_tickets', JSON.stringify(tickets));
-            renderAdminList();
-        }
-
-        function logoutAdmin() {
-            isAdminMode = false;
-            location.reload();
+            if(!confirm("Are you sure? User will be able to create a new ticket after deletion.")) return;
+            const tx = db.transaction("tickets", "readwrite");
+            tx.objectStore("tickets").delete(id).onsuccess = () => loadAdminTickets();
         }
     </script>
 </body>
